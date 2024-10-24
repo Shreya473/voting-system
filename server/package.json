@@ -1,0 +1,22 @@
+{
+    "name": "voting-system-server",
+    "version": "1.0.0",
+    "description": "Express server for voting system",
+    "main": "server.js",
+    "scripts": {
+        "server": "node server/server.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.20.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.1",
+        "mongoose": "^8.7.2",
+        "nodemon": "^3.1.7"
+    },
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "author": "",
+    "license": "ISC"
+}

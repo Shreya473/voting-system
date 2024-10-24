@@ -1,0 +1,27 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.homepage, .auth-page, .vote-page, .confirmation-page {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+input {
+  padding: 10px;
+  margin-top: 10px;
+  width: 50%;
+}
