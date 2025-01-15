@@ -2,11 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 const dotenv = require("dotenv");
 const User = require("./models/User");
 const Vote = require("./models/Vote");
 const Party = require("./models/Party"); // Import Party model
-
+const Admin = require("./models/Admin"); // Import Admin model
+const bcrypt = require('bcrypt');
 
 dotenv.config();
 
@@ -15,13 +17,50 @@ const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use('/images', express.static(path.join(__dirname, '../images')));
+console.log(__dirname + "/../images");
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/VotingSystem", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.log(err));
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+
+// Admin SignIn Route
+app.post('/api/admin-signin', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const existingAdmin = await Admin.findOne({ username });
+    if (existingAdmin) {
+      return res.status(400).json({ success: false, message: 'Admin already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newAdmin = new Admin({ username, password: hashedPassword });
+    await newAdmin.save();
+
+    res.json({ success: true, message: 'Admin registered successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Admin Login Route
+app.post('/api/admin-login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const admin = await Admin.findOne({ username });
+    if (!admin) return res.status(400).json({ success: false, message: 'Invalid username or password' });
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid username or password' });
+
+    res.json({ success: true, message: 'Login successful' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 
 // Register endpoint
 app.post('/api/register', async (req, res) => {
@@ -66,20 +105,26 @@ app.post('/api/verify', async (req, res) => {
 
 // Save vote and increment party votes
 app.post('/api/save-vote', async (req, res) => {
-  const { aadharNumber, voterId, selectedParty } = req.body;
-
+  const { aadharNumber, voterId, party } = req.body;
+  console.log('Received party:', party); // Debugging line
   try {
-    const newVote = new Vote({ aadharNumber, voterId, selectedParty });
+    // Check if the user has already voted
+    const existingVote = await Vote.findOne({ aadharNumber });
+    if (existingVote) {
+      return res.status(400).json({ message: 'You have already voted.' });
+    }
+
+    // Save new vote
+    const newVote = new Vote({ aadharNumber, voterId, party });
     await newVote.save();
 
     // Increment the votes count for the selected party
-    const party = await Party.findOneAndUpdate(
-      { name: selectedParty },
+    const updatedParty = await Party.findOneAndUpdate(
+      { name: party },
       { $inc: { votes: 1 } },
       { new: true, upsert: true }
     );
-
-    res.status(200).json({ message: 'Vote saved successfully', party });
+    res.status(200).json({ message: 'Vote saved successfully', updatedParty });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to save vote' });

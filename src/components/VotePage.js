@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-
-// Example party data with names and image URLs for symbols
 const parties = [
   { name: 'Bharatiya Janata Party (BJP)', symbol: 'https://upload.wikimedia.org/wikipedia/hi/thumb/e/ec/Bharatiya_Janata_Party_logo.svg.png/800px-Bharatiya_Janata_Party_logo.svg.png' },
   { name: 'Indian National Congress (INC)', symbol: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Indian_National_Congress_hand_logo.svg' },
@@ -16,34 +14,55 @@ const parties = [
 const VotePage = () => {
   const [selectedParty, setSelectedParty] = useState('');
   const [error, setError] = useState('');
+  const [voteCounts, setVoteCounts] = useState([]);
   const navigate = useNavigate();
-  const [notification, setNotification] = useState('');
-  const location = useLocation(); // To access voter details from AuthPage
-  const { aadharNumber, voterId } = location.state || {}; // Extract from state
+  const location = useLocation();
+  const { aadharNumber, voterId } = location.state || {};
 
-  const  handleVote = async (e) => {
-    e.preventDefault();
-    if (selectedParty) {
-      setNotification('');
+  useEffect(() => {
+    const fetchVoteCounts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/save-vote', {
-          aadharNumber,
-          voterId,
-          selectedParty
-        });
-        if (response.status === 200) {
-          setNotification('Vote Submitted');
-          navigate('/confirmation', {
-            state: { aadharNumber, voterId, selectedParty }
-          });
-        }
-      } catch (error) {
-        setError('Failed to fetch fingerprint. Please try again.');
+        const response = await axios.get('http://localhost:5000/api/parties');
+        console.log(response.data);
+        setVoteCounts(response.data);
+      } catch (err) {
+        setError('Failed to fetch vote counts.');
       }
-      // Navigate to confirmation with all necessary data
-      
-    } else {
+    };
+    fetchVoteCounts();
+  }, []);
+
+  // Only set selected party without sending data
+  const handleVoteSelection = (party) => {
+    setSelectedParty(party);
+  };
+
+  // Submit vote data to the server
+  const handleSubmit = async () => {
+    if (!selectedParty) {
       setError('Please select a party to vote for.');
+      return;
+    }
+    console.log('Selected Party:', selectedParty); // Debugging line
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/save-vote', {
+        aadharNumber,
+        voterId,
+        party: selectedParty
+      });
+      if (response.status === 200) {
+        const updatedCounts = voteCounts.map((p) => {
+          if (p.name === selectedParty) {
+            return { ...p, votes: p.votes + 1 };
+          }
+          return p;
+        });
+        setVoteCounts(updatedCounts);
+        navigate('/confirmation', { state: { aadharNumber, voterId, selectedParty } });
+      }
+    } catch (error) {
+      setError('Failed to submit vote. Please try again.');
     }
   };
 
@@ -58,7 +77,7 @@ const VotePage = () => {
                 type="radio"
                 name="party"
                 value={party.name}
-                onChange={(e) => setSelectedParty(e.target.value)}
+                onChange={() => handleVoteSelection(party.name)}
                 style={styles.radio}
               />
               <img src={party.symbol} alt={`${party.name} symbol`} style={styles.symbol} />
@@ -66,8 +85,8 @@ const VotePage = () => {
             </label>
           ))}
         </div>
-        <button onClick={handleVote} style={styles.button}>Submit Vote</button>
         {error && <p style={styles.error}>{error}</p>}
+        <button onClick={handleSubmit} style={styles.submitButton}>Submit Vote</button>
       </div>
     </div>
   );
@@ -87,7 +106,7 @@ const styles = {
     backgroundRepeat: 'no-repeat',
   },
   formWrapper: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     padding: '30px',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
@@ -120,20 +139,19 @@ const styles = {
     height: '40px',
     marginRight: '10px',
   },
-  button: {
-    padding: '10px 20px',
-    fontSize: '1rem',
-    color: '#fff',
-    backgroundColor: '#007bff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-  },
   error: {
     color: 'red',
     marginTop: '10px',
   },
+  submitButton: {
+    padding: '10px 20px',
+    fontSize: '1rem',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  }
 };
 
 export default VotePage;

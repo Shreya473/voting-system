@@ -1,0 +1,162 @@
+/* General Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f6e9;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Align items vertically */
+  padding: 1em;
+  background-color: #004274;
+  color: #c7e2fb;
+}
+
+.navbar-brand {
+  font-size: 1.5em;
+}
+
+.nav-links {
+  display: flex;
+  list-style-type: none;
+}
+
+.nav-links li {
+  margin-left: 20px;
+  display: flex; /* Ensures the button text aligns properly */
+  align-items: center; /* Center align items vertically */
+}
+
+.nav-links li button,
+.nav-links li a {
+  color: #c7e2fb; /* White text */
+  text-decoration: none;
+  padding: 10px 15px; /* Adjust padding to align with the buttons */
+  border: none; /* Remove border for buttons */
+  background-color: transparent; /* Make background transparent */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.nav-links li button:hover,
+.nav-links li a:hover {
+  color: #fff; /* Change color on hover */
+}
+
+/* General button styles */
+button {
+  padding: 10px 15px; /* Consistent padding */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+}
+
+/* Logo */
+.logo {
+  text-align: center;
+  padding: 20px;
+}
+
+.logo img {
+  height: 100px;
+}
+
+/* Carousel */
+.carousel {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 20px 0;
+}
+
+.carousel-inner {
+  display: flex;
+  overflow: hidden;
+}
+
+.carousel-item {
+  min-width: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.carousel img {
+  width: 100%;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+/* SWEEP Section */
+.sweep {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.sweep-logo img {
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+
+.description h2 {
+  font-size: 1.8rem;
+  color: #004274;
+}
+
+.description p {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.features {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.feature-item {
+  margin: 10px;
+}
+
+.features img {
+  max-width: 100%;
+  height: auto;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Button Section */
+.text-center {
+  text-align: center;
+  margin: 40px 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #004274;
+}
+
+p {
+  font-size: 1.25rem;
+  color: #666;
+}

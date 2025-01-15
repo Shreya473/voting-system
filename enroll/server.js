@@ -38,6 +38,7 @@ parser.on('data', (data) => {
 });
 
 app.get('/api/verify-fingerprint', (req, res) => {
+ 
   // Send command to Arduino to fetch fingerprint
   arduinoPort.write('VERIFY_FINGERPRINT\n');
 

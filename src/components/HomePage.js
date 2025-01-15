@@ -1,68 +1,97 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AdminLogin from './AdminLogin'; // Import AdminLogin component
+import AdminSignIn from './AdminSignIn'; // Import AdminSignIn component
+import './HomePage.css'; // Custom styles
 
 const HomePage = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false); // For Admin SignIn
   const navigate = useNavigate();
 
-  // Handle registration button click
-  const handleRegister = () => {
-    navigate('/register');
+  // Show login modal
+  const handleOpenLogin = () => {
+    setShowModal(true);
+    setShowSignIn(false);
   };
 
-  // Handle verification button click
-  const handleVerify = () => {
-    navigate('/authenticate'); // Navigate to authentication/verification page
+  // Show sign-in form
+  const handleOpenSignIn = () => {
+    setShowSignIn(true);
+    setShowModal(false);
+  };
+
+  // Handle successful login and navigate to authenticate
+  const handleLoginSuccess = () => {
+    setShowModal(false); // Close the login modal
+    navigate('/authenticate'); // Navigate to authenticate page
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Welcome to the Voting System</h1>
-      <p style={styles.description}>
-        Please choose one of the options below:
-      </p>
-      <button onClick={handleRegister} style={styles.button}>
-        New Registration
-      </button>
-      <button onClick={handleVerify} style={styles.button}>
-        Verify and Vote
-      </button>
+    <div>
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="navbar-brand">VOTING SYSTEM</div>
+        <ul className="nav-links">
+          <li><a href="/vote-counts">Vote Count</a></li>
+          <li><button onClick={handleOpenLogin}>Admin Login</button></li>
+          <li><button onClick={handleOpenSignIn}>Admin Sign In</button></li>
+        </ul>
+      </nav>
+
+      {/* Render Admin Login or Sign In form */}
+      {showModal && <AdminLogin onLoginSuccess={handleLoginSuccess} />}
+      {showSignIn && <AdminSignIn />}
+
+      {/* Logo */}
+      <div className="logo">
+        <a href="/">
+          <img src="http://localhost:5000/images/logo.png" alt="eci" />
+        </a>
+      </div>
+
+      {/* Carousel */}
+      <div className="carousel">
+        <div className="carousel-inner">
+          <div className="carousel-item active">
+            <img src="http://localhost:5000/images/1.jpg" alt="First slide" />
+          </div>
+          <div className="carousel-item">
+            <img src="http://localhost:5000/images/2.jpg" alt="Second slide" />
+          </div>
+          <div className="carousel-item">
+            <img src="http://localhost:5000/images/3.jpg" alt="Third slide" />
+          </div>
+        </div>
+        <button className="carousel-control prev" onClick={() => {/* Add carousel logic */}}>Previous</button>
+        <button className="carousel-control next" onClick={() => {/* Add carousel logic */}}>Next</button>
+      </div>
+
+      {/* SWEEP Section */}
+      <div className="sweep">
+        <center>
+          <div className="sweep-logo">
+            <img src="http://localhost:5000/images/sweep-logo.png" alt="sweep-logo" />
+          </div>
+          <div className="description">
+            <h2>Systematic Voters’ Education and Electoral Participation</h2>
+            <p>“Greater Participation for a Stronger Democracy”</p>
+          </div>
+        </center>
+        <div className="features">
+          <div className="feature-item">
+            <img src="http://localhost:5000/images/4.png" alt="Feature 1" />
+          </div>
+          <div className="feature-item">
+            <img src="http://localhost:5000/images/5.jpg" alt="Feature 2" />
+          </div>
+          <div className="feature-item">
+            <img src="http://localhost:5000/images/6.png" alt="Feature 3" />
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundImage:'url("https://media.istockphoto.com/id/1488642770/photo/indian-flag-paint-brush-on-white-background-the-concept-of-india-drawing-brushstroke-grunge.jpg?s=612x612&w=0&k=20&c=bmaJuvmEUhXxvf9qx-EeEQ5tlySdPDSnJfchpbZqF1g=")',
-    height: "97vh",
-    // marginTop: "-70px",
-    fontSize: "50px",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-  },
-  title: {
-    fontSize: '2.5rem',
-    color: '#333',
-  },
-  description: {
-    fontSize: '1.25rem',
-    color: '#666',
-    margin: '20px 0',
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: '1rem',
-    color: '#fff',
-    backgroundColor: '#007bff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    margin: '10px',
-    transition: 'background-color 0.3s',
-  },
 };
 
 export default HomePage;
